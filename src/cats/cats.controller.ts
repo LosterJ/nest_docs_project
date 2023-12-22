@@ -1,7 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 
 @Controller('cats')
 export class CatsController {
+    @Post()
+    create(): string {
+        return 'This action adds a new cat';
+    }
+    //standard HTTP methods: @Get(), @Post(), @Put(), @Delete(), @Patch(), @Options(), @Head;
+    //@All() defines an endpoint that handles all of them.
+
     @Get('breed')
     findAll(): string {
         return 'This action returns all cats';
