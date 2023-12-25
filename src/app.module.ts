@@ -8,7 +8,9 @@ import { AccountController } from './account/account.controller';
 
 @Module({
   imports: [TestModule],
-  controllers: [AdminController, AccountController, AppController, CatsController],
+  controllers: [AdminController, AppController, CatsController, AccountController],
+  //Van de xay ra khi AccountController dat truoc AppController, vi khi do no se coi localhost cung la tham so :accounts
+  //neu de AccountController o sau AppController thi se khong nhan AccountController
   providers: [AppService],
 })
 export class AppModule {}

@@ -21,6 +21,11 @@ export class CatsController {
   //standard HTTP methods: @Get(), @Post(), @Put(), @Delete(), @Patch(), @Options(), @Head;
   //@All() defines an endpoint that handles all of them.
 
+  @Get()
+  async findAllAsync(): Promise<any[]> {
+    return [];
+  }
+
   @Get('breed')
   findAll(): string {
     return 'This action returns all cats';
