@@ -8,6 +8,7 @@ import {
   Query,
   Redirect,
 } from '@nestjs/common';
+import { Observable, of } from 'rxjs';
 
 @Controller('cats')
 export class CatsController {
@@ -25,6 +26,17 @@ export class CatsController {
   async findAllAsync(): Promise<any[]> {
     return [];
   }
+  /*Every async function has to return a Promise. This above code is fully valid.*/
+  @Get('observer')
+  findAllObserve(): Observable<any[]> {
+    return of([]);
+  }
+  /*
+  Nest route handlers are even more powerfull being able to return RxJS observable streams.
+  Nest will automatically subscribe to the source underneath and take the last emitted value (once the stram is completed).
+  Both of the above approaches work and you can use whatever fits your requirements.
+  */
+
 
   @Get('breed')
   findAll(): string {
