@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Header,
@@ -9,15 +10,16 @@ import {
   Redirect,
 } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
+import { CreateCatDto } from './dto/create-cat.dto';
 
 @Controller('cats')
 export class CatsController {
   @Post()
-  @HttpCode(204) // The response status code is always 200 by default (POST: 201), we can change this behavior by adding the @HttpCode(...)
+  @HttpCode(201) // The response status code is always 200 by default (POST: 201), we can change this behavior by adding the @HttpCode(...)
   //Your status code isn't static but depends on various factors -> Use a library-specific response (inject using @Res()).
-  @Header('Cache-Control', 'none') // Or use library-specific response object res.header() directly.
-  create(): string {
-    return 'This action adds a new cat';
+  @Header('Content-Type', 'application/json') // Or use library-specific response object res.header() directly.
+  async create(@Body() createCatDto: CreateCatDto) {
+    return `Cat created with name: ${createCatDto.name}, age: ${createCatDto.age}, breed: ${createCatDto.breed}`;
   }
   //standard HTTP methods: @Get(), @Post(), @Put(), @Delete(), @Patch(), @Options(), @Head;
   //@All() defines an endpoint that handles all of them.
@@ -26,7 +28,7 @@ export class CatsController {
   async findAllAsync(): Promise<any[]> {
     return [];
   }
-  /*Every async function has to return a Promise. This above code is fully valid.*/
+/*Every async function has to return a Promise. This above code is fully valid.*/
   @Get('observer')
   findAllObserve(): Observable<any[]> {
     return of([]);
@@ -69,11 +71,11 @@ export class CatsController {
   In order to define routes with parameters, we can add route parameter tokens in the path of the route to capture the dynamic value
   Route parameters declared in this way can be accessed using the @Param() decorator.
   */
-//   @Get(':id')
-//   findOne(@Param() params:any): string {
-//     console.log(params.id);
-//     return `This aciton returns a #${params.id} cat`;
-//   }
+  //   @Get(':id')
+  //   findOne(@Param() params:any): string {
+  //     console.log(params.id);
+  //     return `This aciton returns a #${params.id} cat`;
+  //   }
   //Routes with parameters should be declared after any static paths to prevent from intercepting traffic destined for the static paths.
 
   //You can also pass in a particular parameter token to the decorator, and then reference the route parameter directly by name in the method body.
