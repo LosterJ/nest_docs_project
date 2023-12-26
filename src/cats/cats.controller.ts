@@ -59,9 +59,8 @@ export class CatsController {
 
   @Get('nestjs')
   @Redirect('https://nestjs.com', 301)
-  test() {
-    return { url: 'https://docs.nestjs.com/' };
-  }
+  test() {}
+  
   @Get('docs')
   getDocs() {
     return { url: 'https://docs.nestjs.com/providers' };

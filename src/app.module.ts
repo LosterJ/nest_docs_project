@@ -9,8 +9,8 @@ import { AccountController } from './account/account.controller';
 @Module({
   imports: [TestModule],
   controllers: [AdminController, AppController, CatsController, AccountController],
-  //Van de xay ra khi AccountController dat truoc AppController, vi khi do no se coi localhost cung la tham so :accounts
-  //neu de AccountController o sau AppController thi se khong nhan AccountController
   providers: [AppService],
 })
 export class AppModule {}
+
+//We needed to attach the metadata to the module class using the @Module() decorator, and Nest can easily reflect which controllers have to be mounted.
