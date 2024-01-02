@@ -5,11 +5,13 @@ import { CatsController } from './cats/cats.controller';
 import { TestModule } from './test/test.module';
 import { AdminController } from './admin/admin.controller';
 import { AccountController } from './account/account.controller';
+import { CatsService } from './cats/cats.service';
+import { HttpService } from './http/http.service';
 
 @Module({
   imports: [TestModule],
   controllers: [AdminController, AppController, CatsController, AccountController],
-  providers: [AppService],
+  providers: [AppService, CatsService, HttpService],
 })
 export class AppModule {}
 
