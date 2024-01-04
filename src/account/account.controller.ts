@@ -1,9 +1,19 @@
-import { Controller, Get, HostParam, Redirect } from '@nestjs/common';
+import { Controller, Get, HostParam } from '@nestjs/common';
+import { CatsService } from 'src/cats/cats.service';
+import { Cat } from 'src/cats/interfaces/cat.interface';
 
 @Controller({ host: ':account' })
 export class AccountController {
+    constructor(private readonly catsService: CatsService) {}
+
+    @Get("cats")
+    async findAll(): Promise<Cat[]> {
+        return this.catsService.findAll();
+    }
+
     @Get()
     getInfo(@HostParam('account') account: string): string {
+        console.log({account})
         return account;
     }
 }
