@@ -6,11 +6,12 @@ import { HttpService } from './http/http.service';
 import { AdminModule } from './admin/admin.module';
 import { AccountModule } from './account/account.module';
 import { CatsModule } from './cats/cats.module';
+import { CatsService } from './cats/cats.service';
 
 @Module({
   imports: [TestModule,  AdminModule, AccountModule, CatsModule],
   controllers: [AppController],
-  providers: [AppService, HttpService],
+  providers: [AppService, HttpService, CatsService],
 })
 export class AppModule {}
 
