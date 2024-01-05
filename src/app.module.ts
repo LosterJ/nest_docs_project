@@ -5,9 +5,10 @@ import { TestModule } from './test/test.module';
 import { HttpService } from './http/http.service';
 import { AdminModule } from './admin/admin.module';
 import { AccountModule } from './account/account.module';
+import { CatsModule } from './cats/cats.module';
 
 @Module({
-  imports: [TestModule,  AdminModule, AccountModule],
+  imports: [TestModule,  AdminModule, AccountModule, CatsModule],
   controllers: [AppController],
   providers: [AppService, HttpService],
 })
