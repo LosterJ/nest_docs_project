@@ -5,6 +5,9 @@ import { BaseController } from 'src/class/BaseController';
 
 @Controller({ host: ':account' })
 export class AccountController extends BaseController<Cat, null>{
+    constructor(private afsd: CatsService) {
+        super(afsd)
+    }
 }
 // export class AccountController {
 //     /*Test global CatsModule*/

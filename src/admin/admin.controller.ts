@@ -1,7 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
+import { CatsService } from 'src/cats/cats.service';
+import { BaseController } from 'src/class/BaseController';
 
 @Controller({ host: 'admin.localhost' })
-export class AdminController {
+export class AdminController extends BaseController<null, null>{
+    constructor(private afsd: CatsService) {
+        super(afsd)
+    }
     @Get()
     index(): string {
         return 'Admin page alkdsjfjasd';

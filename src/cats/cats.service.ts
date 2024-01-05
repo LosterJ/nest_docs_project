@@ -12,6 +12,10 @@ export class CatsService {
     findAll(): Cat[] {
         return this.cats;
     }
+
+    get(): any {
+        return 1;
+    }
 }
 
 //The @Injectable() decorator attaches metatdata,
