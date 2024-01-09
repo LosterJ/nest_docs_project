@@ -59,3 +59,10 @@ Global modules
 
     If you have to import the same set of modules everywhere, it can get tedious. In Nest, encapsulates providers inside the module scope. You aren't able to use a module's providers elsewhere without first importing the encapsulating module.
     When you want to provide a set of providers which should be available everywhere out-of-the-box (e.g., helpers, db connection,...), make the module global with the @Global() decorator.
+
+
+**Dynamic modules ()
+    example.module.ts
+
+    Dynamic modules is a feature of Nest module, this enables you to easily create customizable modules that can register and configure providers dynamically.
+    More on fundamentals/dynamic-modules.

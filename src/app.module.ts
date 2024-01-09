@@ -5,9 +5,10 @@ import { TestModule } from './test/test.module';
 import { HttpService } from './http/http.service';
 import { AdminModule } from './admin/admin.module';
 import { AccountModule } from './account/account.module';
+import { ExampleModule } from './example/example.module';
 
 @Module({
-  imports: [TestModule,  AdminModule, AccountModule],
+  imports: [TestModule,  AdminModule, AccountModule, ExampleModule.register({ apiKey: 'your-api-key', apiUrl: 'your-api-url'})],
   controllers: [AppController],
   providers: [AppService, HttpService],
 })
