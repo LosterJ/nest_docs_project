@@ -33,6 +33,13 @@
     - When using the express adapter, NestJS app will register json and urlencoded from the package body-parser by default.
     This means if you want to customize that middleware via the MiddlewareCustomer, you need to turn off the global middleware by setting the bodyParser flag to false when creating the app with NestFactory.create()
 
+    - We may also further restrict a middleware to a particular req method (passing an object containing the route path and req method to forRoutes() method):
+        configure(consumer: MiddlewareConsumer) {
+            consumer
+            .apply(LoggerMiddleware)
+            .forRoutes({path: 'cats', method: RequestMethod.GET})
+        }
+
 **Route wildcard**
     `forRoute({ path: 'ab*cd, method: RequestMethod.ALL '});`
     The characters ?, +, *, () may be used in a route path, and are subsets of their regular expression counterparts.
@@ -64,4 +71,31 @@
     The exclude() method supports wildcard parameters using the path-to-regexp package.
 
 **Functional middleware**
-    
+    In the first version of LoggerMiddleware class, we've been using is quite simple (no members, no additional methods, and no dependencies).
+    When we define it in a simple function instead of a class, this type of middleware is called functional middleware.
+
+        (logger.middleware.ts) 
+            export function logger(req: Request, res: Response, next: NextFunction) {
+                console.log(`Request...`);
+                next();
+            };
+        (app.module.ts)
+            consumer
+            .apply(logger)
+            .forRoutes(CatsController);
+    Consider using the simpler functional middleware alternative any time your middleware doesn't need any dependencies.
+
+**Multiple middleware**
+    In order to bind multiple middleware that are executed sequentially, simply provide a comma separated list inside the apply() method
+        consumer.apply(cors(),helmet(),logger).forRoutes(CatsController);
+
+**Global middleware**
+    If we want to bind middleware to every registered route at once, we can use the use() method that is supplied by the INestApplication instance.
+
+        (main.ts)
+        const app = await NestFactory.create(AppModule);
+        app.use(logger);
+        await app.listen(3000);
+
+    Access the DI container in a global middleware is not possible. You can use a functional middleware instead when using app.use().
+    Alternatively, you can use a class middleware and consume it with .forRoute('*') within the AppModule (or any other module).
