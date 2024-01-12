@@ -7,12 +7,17 @@ import { AdminModule } from './admin/admin.module';
 import { AccountModule } from './account/account.module';
 import { ExampleModule } from './example/example.module';
 import { logger } from './logger/logger.middleware';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './http-exception/http-exception.filter';
 // import { LoggerMiddleware } from './logger/logger.middleware';
 
 @Module({
   imports: [TestModule,  AdminModule, AccountModule, ExampleModule.register({ apiKey: 'your-api-key', apiUrl: 'your-api-url'})],
   controllers: [AppController],
-  providers: [AppService, HttpService],
+  providers: [AppService, HttpService, {
+    provide: APP_FILTER,
+    useClass: HttpExceptionFilter,
+  }],
 })
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
