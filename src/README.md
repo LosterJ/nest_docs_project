@@ -1,6 +1,6 @@
-$ npm i -g @nestjs/cli
+$ npm i -g @nestjs/cli $
 
-$ nest new project-name
+$ nest new project-name $
 
 <!-- 
 app.controller.spec.ts: The unit tests for the controller
@@ -12,11 +12,19 @@ main.ts:
     - Includes an async func, which will bootstrap our app 
 -->
 
-$ npm run start:dev | npm run lint | npm run format
+$ npm run start:dev | npm run lint | npm run format $
 
-<!--
-    For quickly creating a CRUD controller with validation build-in:
-    $ nest g resource [name]
--->
 
-$ nest g controller [name]
+<!-- For quickly creating a CRUD controller with validation build-in: -->
+$ nest g resource [name] $
+
+
+$ nest g controller [name] $
+
+<!-- Object schema validation -->
+$ npm i -s zod $
+        <!-- tsconfig.json -> strictNullChecks: true -->
+
+<!-- Class validator -->
+$ npm i -s class-validator class-transformer $
+

@@ -12,7 +12,7 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true, //Zod lib requires the strictNullChecks configuration to be enabled in your tsconfig.json file.
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,

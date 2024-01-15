@@ -1,24 +1,37 @@
-import { z } from "zod";
+import { IsInt, IsString } from "class-validator";
 
-export const createCatSchema = z
-    .object({
-        name: z.string(),
-        age: z.number(),
-        breed: z.string(),
-    })
-    .required();
+export class CreateCatDto {
+    @IsString()
+    name: string;
 
-export type CreateCatDto = z.infer<typeof createCatSchema>;
+    @IsInt()
+    age: number;
 
-const a = {abc: 1}
+    @IsString()
+    breed: string;
+}
 
-export default a;
 
-// export class CreateCatDto {
-//     name: string;
-//     age: number;
-//     breed: string;
-// }
+/* Object schema valid
+
+    import { z } from "zod";
+    export const createCatSchema = z
+        .object({
+            name: z.string(),
+            age: z.number(),
+            breed: z.string(),
+        })
+        .required();
+    export type CreateCatDto = z.infer<typeof createCatSchema>;
+ */
+
+/* Not valid just list
+    export class CreateCatDto {
+        name: string;
+        age: number;
+        breed: string;
+    }
+*/
 
 /*
 A DTO is an object that defines how the data will be sent over the network.

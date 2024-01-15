@@ -1,10 +1,11 @@
 import { Body, Controller, Post , Get, Query, Param, HttpException, HttpStatus, BadRequestException, UseFilters, UsePipes } from '@nestjs/common';
-import { CreateCatDto, createCatSchema } from './dto/create-cat.dto';
+import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 import { ForbiddenException } from 'src/forbidden/forbidden.exception';
 import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
 import { ZodValidationPipe } from 'src/zod-validation/zod-validation.pipe';
+import { ValidationPipe } from 'src/validation/validation.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -21,16 +22,20 @@ export class CatsController {
   //     throw new ForbiddenException();
   //   }
   // }
+
   @Post()
-  @UsePipes(new ZodValidationPipe(createCatSchema))
-  async create(@Body() createCatDto: CreateCatDto) {
-    const cat: Cat = {
-      name: createCatDto.name!,
-      age: createCatDto.age!,
-      breed: createCatDto.breed!,
-    };
-    this.catsService.create(cat);
+  async create(
+    @Body(new ValidationPipe) createCatDto: CreateCatDto,
+  ) {
+    this.catsService.create(createCatDto);
   }
+
+  //Use schema to valid
+  // @Post()
+  // @UsePipes(new ZodValidationPipe(createCatSchema))
+  // async create(@Body() createCatDto: CreateCatDto) {
+  //   this.catsService.create(createCatDto);
+  // }
 
   @Get()
   async findAll(): Promise<Cat[]> {

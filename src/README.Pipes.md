@@ -119,3 +119,96 @@ A pipe is a class annotated with @Injectable() decorator, which implements the P
     
     We do that using the @UsePipes() decorator as shown below:
         (cat.controller.ts)
+        @Post()
+        @UsePipes(new ZodValidationPipe(createCatSchema))
+        async create(@Body() createCatDto: CreateCatDto) {
+            this.catsService.create(createCatDto);
+        }
+    @UsePipes() decorator is imported form the @nestjs/common package.
+
+    zod lib requires the strictNullCheck configuration to be enabled in your tsconfig.json file.
+
+    Example: create-cat.dto.ts, zod-validatioin.pipe.ts, cats.controller.ts
+
+**Class validator**
+    //WARNING: The techniques in this section require TS and are not available if your app is written using vanilla JS.
+
+    Nest works well with the class-validator library. This powerful library allows you to decorator-based validation.
+    Decorator-based validation is extremely powerful, espicially when combined with Nest's Pipe capabilities since we have access to the metatype of the processed property.
+    First, we need to install the required packages:
+        $npm i -s class-validator class-transformer
+    
+    Once these are installed, we can add a few decorators to the CreateCatDto class.
+    -> Significant advantage of technique: the CreateCatDto class remains the single source of truth for our Post body object (rather than having to create a separate validation class).
+
+        create-cat.dto.ts
+        validation.pipe.ts
+
+    You don't have to build a generic validation pipe on your own since the ValidationiPipe is provided by Nest out-of-the-box.
+    The built-in ValidationPipe offers more options than the sample we built in this chapter, which has been kept basic for the sake of illustrating the mechanics of a custom-built pipe. You can find full details, along with lots of example. In techniques/validation.
+
+    //NOTICE: The class-transformer and class-validator libraries is made by the same author, and as a result, they play very well together.
+
+    Class-validator needs to use the validation decorators we defined for our DTO earlier,
+    so we need to perform this transformation to treat the incoming body as an appropriately decorated object, not just a plain vanilla object.
+    
+    The last step is to bind the ValidationPipe. Pipes can be parameter-scoped, or global-scoped.
+        Earlier, with Zod-based validation pipe, we saw an example of binding the pipe at the method level.
+        In the example below, we'll bind the pipe instance to the route handler @Body() decorator so that our pipe is called to validate the post body.
+
+            cats.controller.ts
+
+    Parameter-scoped pipes are useful when the validation logic concerns only one specified parameter.
+
+**Global scoped pipes**
+    Since the ValidationPipe was created to be as generic as possible, we can realize it's full utility by setting it up as a global-scoped pipe so that it is applied to every route handler across the entire application.
+
+        (main.ts)
+        async function bootstrap() {
+            const app = await NestFactory.create(AppModule);
+            app.useGlobalPipes(new ValidationPipe());
+            await app.listen(3000);
+        }
+        bootstrap();
+
+    In the case of hybrid apps the useGlobalPipes() method doesn't set up pipes for gateways and micro service.
+    For standard (non-hybrid) microservice apps, useGlobalPipes() does mount pipes globally.
+
+    Global pipes are used across the whole app, for every controller and every route handler.
+
+    Note that in terms of dependency injection, global pipes registered from outside of any module (e.g., useGlobalPipes()) cannot inject dependencies since the binding has been done outside the context of any module. In order to solve this issue, you can set up a global pipe directly from any module using the following construction:
+        (app.module.ts)
+        @Module({
+            providers: [
+                {
+                    provide: APP_PIPE,
+                    useClass: ValidationPipe,
+                },
+            ],
+        })
+        export class AppModule {}
+    
+**The built-in ValidationPipe**
+    You don't have to build a generic validation pipe since the ValidationPipe is provided by Nest out-of-the-box.
+    It have more options and can use directly.
+
+**Transformation use case**
+    At the beginning of this chapter, we mentioned that a pipe can also transform the input data to the desired format.
+        This is possible because the value returned from the transform function completely overrides the previous value of the argument.
+    It's useful bcz sometimes the data passed form the client needs to undergo some change (string->integer) before it can be properly handled by the route handler method. Or some requied data fields may be missing, so we would like to apply default values.
+    -> Transformation pipes can perform these functions by interposing a processing function between the client request and the the request handler.
+
+        parse-int.pipe.ts (this is simple pipe to parsing a string into an integer value - simple than built-in ParseIntPipe)
+        admin.controller.ts
+
+**Providing default**
+    Parse* pipes expect a parameter's value to be defined. They throw an exception upon receiving null or undefined values.
+    So, to allow an endpoint to handle missing querystring parameter values, we have to provide a default value to be injected before the Parse* pipes operate on these values
+    -> The DefaultValuePipe serves that purpose. Simply instantiate a DefaultValuePipe in the @Query() decorator before the relevant Parse* pipe:
+            @Get()
+            async findAll(
+                @Query('activeOnly', new DefaultValuePipe(false), ParseBoolPipe) activeOnly: boolean,
+                @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+            ) {
+                return this.catsService.findAll({ activeOnly, page });
+            }
