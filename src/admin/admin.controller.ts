@@ -1,10 +1,35 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { CatsService } from 'src/cats/cats.service';
 
+import test from '../cats/dto/create-cat.dto';
+import * as testb  from '../cats/dto/create-cat.dto';
+import {createCatSchema} from '../cats/dto/create-cat.dto';
 @Controller({ host: 'admin.localhost' })
 export class AdminController {
+    constructor(private readonly catsService: CatsService) {}
+
     @Get()
     index(): string {
+        const x = {
+            a: 1, b: 2, c12323:3 , d: 4, e: 5
+        }
+        const {b, c12323} = x;
+        // const a = x.a;
+        // const b= x.b
+        console.log("🚀 ~ AdminController ~ index ~ b:", b)
+        const {b:as ,e, ...y} = x
+        console.log("🚀 ~ AdminController ~ index ~ y:", y)
+        const {a: testa, b: testb} = x;
+         // const testa = x.a;
+        // const testb = x.b
+        console.log("🚀 ~ AdminController ~ index ~ testb:", testb)
+        console.log("🚀 ~ AdminController ~ index ~ testa:", testa)
+        
         return 'Admin page alkdsjfjasd';
+    }
+    @Get(':id')
+    async findOneTwoThree(@Param('id',ParseIntPipe) id: number) {
+        return this.catsService.findAll();
     }
 }
 

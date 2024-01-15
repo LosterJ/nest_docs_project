@@ -1,9 +1,10 @@
-import { Body, Controller, Post , Get, Query, Param, HttpException, HttpStatus, BadRequestException, UseFilters } from '@nestjs/common';
-import { CreateCatDto } from './dto/create-cat.dto';
+import { Body, Controller, Post , Get, Query, Param, HttpException, HttpStatus, BadRequestException, UseFilters, UsePipes } from '@nestjs/common';
+import { CreateCatDto, createCatSchema } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 import { ForbiddenException } from 'src/forbidden/forbidden.exception';
 import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
+import { ZodValidationPipe } from 'src/zod-validation/zod-validation.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -11,16 +12,24 @@ export class CatsController {
   // CatsService is injected through the class constructor.
   // private sysntax allows us to both declare and initialize the catsService member immediately in the same location.
 
+  // @Post()
+  // @UseFilters(new HttpExceptionFilter())
+  // async create(@Body() createCatDto: CreateCatDto) {
+  //   try {
+  //     this.catsService.create(createCatDto);
+  //   } catch (error) {
+  //     throw new ForbiddenException();
+  //   }
+  // }
   @Post()
-  @UseFilters(new HttpExceptionFilter())
+  @UsePipes(new ZodValidationPipe(createCatSchema))
   async create(@Body() createCatDto: CreateCatDto) {
-    try {
-      this.catsService.create(createCatDto);
-    } catch (error) {
-      throw new ForbiddenException();
-    }
-    
-
+    const cat: Cat = {
+      name: createCatDto.name!,
+      age: createCatDto.age!,
+      breed: createCatDto.breed!,
+    };
+    this.catsService.create(cat);
   }
 
   @Get()

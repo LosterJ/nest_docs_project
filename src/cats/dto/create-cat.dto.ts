@@ -1,8 +1,24 @@
-export class CreateCatDto {
-    name: string;
-    age: number;
-    breed: string;
-}
+import { z } from "zod";
+
+export const createCatSchema = z
+    .object({
+        name: z.string(),
+        age: z.number(),
+        breed: z.string(),
+    })
+    .required();
+
+export type CreateCatDto = z.infer<typeof createCatSchema>;
+
+const a = {abc: 1}
+
+export default a;
+
+// export class CreateCatDto {
+//     name: string;
+//     age: number;
+//     breed: string;
+// }
 
 /*
 A DTO is an object that defines how the data will be sent over the network.
