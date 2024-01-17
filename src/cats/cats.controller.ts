@@ -1,4 +1,4 @@
-import { Body, Controller, Post , Get, Query, Param, HttpException, HttpStatus, BadRequestException, UseFilters, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post , Get, Query, Param, HttpException, HttpStatus, BadRequestException, UseFilters, UsePipes, UseGuards } from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
@@ -6,8 +6,10 @@ import { ForbiddenException } from 'src/forbidden/forbidden.exception';
 import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
 import { ZodValidationPipe } from 'src/zod-validation/zod-validation.pipe';
 import { ValidationPipe } from 'src/validation/validation.pipe';
+import { RolesGuard } from 'src/roles/roles.guard';
 
 @Controller('cats')
+@UseGuards(RolesGuard)
 export class CatsController {
   constructor(private catsService: CatsService) {}
   // CatsService is injected through the class constructor.
