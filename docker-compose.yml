@@ -1,0 +1,14 @@
+version: 'latest'
+services:
+  dev-db:
+    image: postgres:latest
+    ports:
+      - 5424:5434
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    networks:
+      - freecodecamp
+networks:
+  freecodecamp:
