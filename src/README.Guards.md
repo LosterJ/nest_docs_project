@@ -71,3 +71,58 @@ In terms of DI, global guards registered from outside of any module cannot injec
 })
 export class AppModule {}
 ```
+> When using this approach to perform dependency injection for the guard, note that regardless of the module where this construction is employed, the guard is ,in fact, global. Where should this be done? Choose the module where the guard is defined. Also, useClass is not the only way of dealing with custom provider registration. Learn more [fundamentals/custom-providers](https://docs.nestjs.com/fundamentals/custom-providers)
+
+## Setting roles per handler
+
+Our RolesGuard is working, but it's not very smart yet. We're not yet taking advantage of the most important guard feature - the execution context. It doesn't yet know about roles, or which roles are allowed for each handler.
+
+The CatsController, for example, could have different permission schemes for diffirent routes. Some might be available only for an admin user, and others could be open for everyone. How can we match roles to routes in a flexible and reusable way?
+This is where custom metadata comes into play (learn more [fundamentals/execution-context#reflection-and-metadata](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata)). Nest provides the ability to attach custom metadata to route handlers through either decorators created via Reflector#createDecorator static method, or the built-in @SetMetadata() decorator.
+
+For example, let's create a @Roles() decorator using the Refector#createDecorator method that will attach the metadata to the handler. Reflector is provided out of the box by the framework and exposed from the @nestjs/core package.
+
+```JS
+// roles.decorator.ts
+import { Reflector } from '@nestjs/core'
+export const Roles = Reflector.createDecorator<string[]>();
+```
+The Roles decorator here is a function that takes a single argument of type string[].
+Now, to use this decorator, we simply anotate the handler with it:
+```JS
+// cats.controller.ts
+@Post()
+@Roles(['admin'])
+async create(@Body() createCatDto: CreateCatDto) {
+        this.catsService.create(createCatDto);
+}
+```
+Here we've attached the Roles decorator metadata to the create() method, indicating that only users with the admin role should be allowed to access this route.
+
+Alternatively, instead of using the Reflector#createDecorator method, we could use the built-in @SetMetadata() decorator. Learn more [fundamentals/execution-context#low-level-approach](https://docs.nestjs.com/fundamentals/execution-context#low-level-approach).
+
+## Putting it all together
+
+Now go back and tie this together with our RolesGuard. Currently, it simply returns true in all cases (allowing every request to process). We want to make the return value conditional based on the comparing the roles assigned to the current user to actual roles required by the current route being processed.
+
+In order to access the route's role(s) (custom metadata), we'll use the Reflector helper class again, as follows:
+
+        roles.guard.ts
+
+> In the node.js world, it's common practice to attach the authorized user to the request object. In our sample code above, we are assuming that request.user contains the user instance and allowed roles. In your app, you will probably make that associatioin in your custom authentication guard (or middleware). Check [security/authentication](https://docs.nestjs.com/security/authentication) for more.
+
+Refer to [Reflection and metadata](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata) for more details on utilizing Reflector in a context-sensitive way.
+
+When a user with insufficient privileges requests an endpoint, Nest automatically returns the following response:
+```JSON
+{
+        "statusCode": 403,
+        "message": "Forbidden resource",
+        "error": "Forbidden"
+}
+```
+Note that behind the scenes, when a guard returns false, the framework throws a ForbiddenException. If you want to return a different error response, you should throw your own specific exception. For example:
+```TS
+throw new UnauthorizedException();
+```
+Any exception thrown by a guard will be handled by the exception layer (global exceptions filter and any exceptions filters that are applied to the current context).

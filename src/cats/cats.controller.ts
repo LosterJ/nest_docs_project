@@ -7,6 +7,7 @@ import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
 import { ZodValidationPipe } from 'src/zod-validation/zod-validation.pipe';
 import { ValidationPipe } from 'src/validation/validation.pipe';
 import { RolesGuard } from 'src/roles/roles.guard';
+import { Roles } from 'src/roles/roles.decorator';
 
 @Controller('cats')
 @UseGuards(RolesGuard)
@@ -26,6 +27,7 @@ export class CatsController {
   // }
 
   @Post()
+  //@Roles(['admin'])
   async create(
     @Body(new ValidationPipe) createCatDto: CreateCatDto,
   ) {
